@@ -1,0 +1,28 @@
+﻿# Build Folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Databases, Local Storage
+*.db
+*.sqlite
+*.backup
+
+# Sensitive config
+appsettings.Development.json
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+
+# Nu include aceste fișiere temporare
+*.tmp
+*.temp
