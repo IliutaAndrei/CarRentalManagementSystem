@@ -1,4 +1,5 @@
 using CarRentalManagementSystem.Data;
+using CarRentalManagementSystem.Models;
 using CarRentalManagementSystem.Services;
 using CarRentalManagementSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -9,26 +10,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequiredUniqueChars = 1;
-})
-.AddEntityFrameworkStores<CarRentContext>()
-.AddDefaultTokenProviders();
-
 
 builder.Services.AddDbContext<CarRentContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<CarRentContext>()
+.AddDefaultTokenProviders()
+.AddDefaultUI();
 
 var app = builder.Build();
 
@@ -52,6 +49,12 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Apply seeding for Admin role/user
+using (var scope = app.Services.CreateScope())
+{
+    await RoleInitializer.SeedRolesAsync(scope.ServiceProvider);
+}
 
 
 app.Run();
